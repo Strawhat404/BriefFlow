@@ -1,0 +1,57 @@
+services:
+
+  # ── MySQL 8 ─────────────────────────────────────────────────────────────────
+  db:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: brewflow
+    volumes:
+      # Persist data across restarts
+      - db_data:/var/lib/mysql
+      # Auto-run all migrations on first init (executed in filename order)
+      - ./database/migrations:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+    ports:
+      - "3306:3306"
+
+  # ── Rocket backend ──────────────────────────────────────────────────────────
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: mysql://root:root@db/brewflow
+      JWT_SECRET: ${JWT_SECRET:-brewflow-dev-secret-key}
+      COOKIE_SECRET: ${COOKIE_SECRET:-brewflow-dev-cookie-secret}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY:-brewflow-dev-encryption-key}
+      # Override Rocket.toml's 127.0.0.1 so the container accepts external traffic
+      ROCKET_ADDRESS: "0.0.0.0"
+      ROCKET_PORT: "8000"
+      RUST_LOG: ${RUST_LOG:-info}
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # ── Dioxus frontend (nginx) ─────────────────────────────────────────────────
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+
+volumes:
+  db_data:
