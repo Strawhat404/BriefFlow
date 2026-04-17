@@ -26,7 +26,7 @@ pub fn CartPage(locale: String) -> Element {
         let session_cookie = app_state().auth.session_cookie.clone();
         async move {
             loading.set(true);
-            let mut req = reqwest::Client::new().get(&format!("{}/cart", &crate::api_base()));
+            let mut req = reqwest::Client::new().get(&format!("{}/cart", &crate::app::api_base()));
             if let Some(ref sc) = session_cookie { req = req.header("Cookie", format!("brewflow_session={}", sc)); }
             match req.send().await {
                 Ok(resp) => {
@@ -66,7 +66,7 @@ pub fn CartPage(locale: String) -> Element {
                                 rsx! {
                                     div { class: "text-center py-16",
                                         p { class: "text-gray-400 text-lg mb-4", "{empty_text}" }
-                                        Link { to: crate::Route::Menu { locale: locale.clone() },
+                                        Link { to: crate::app::Route::Menu { locale: locale.clone() },
                                             class: "inline-flex items-center justify-center px-5 py-2.5 rounded-lg text-sm font-medium bg-primary text-white hover:bg-primary-dark transition-all no-underline",
                                             if loc == "zh" { "\u{53bb}\u{9009}\u{8d2d}" } else { "Browse Menu" }
                                         }
@@ -90,18 +90,18 @@ pub fn CartPage(locale: String) -> Element {
                                                         div { class: "flex items-center gap-4 ml-4",
                                                             div { class: "flex items-center gap-2",
                                                                 button { class: QTY_BTN, disabled: item_qty <= 1,
-                                                                    onclick: move |_| { let sc = app_state().auth.session_cookie.clone(); let nq = item_qty - 1; spawn(async move { let mut req = reqwest::Client::new().put(&format!("{}/cart/{}", &crate::api_base(), item_id)).json(&serde_json::json!({"quantity":nq})); if let Some(ref s)=sc{req=req.header("Cookie",format!("brewflow_session={}",s));} let _=req.send().await; update_trigger.set(update_trigger()+1); }); },
+                                                                    onclick: move |_| { let sc = app_state().auth.session_cookie.clone(); let nq = item_qty - 1; spawn(async move { let mut req = reqwest::Client::new().put(&format!("{}/cart/{}", &crate::app::api_base(), item_id)).json(&serde_json::json!({"quantity":nq})); if let Some(ref s)=sc{req=req.header("Cookie",format!("brewflow_session={}",s));} let _=req.send().await; update_trigger.set(update_trigger()+1); }); },
                                                                     "-"
                                                                 }
                                                                 span { class: "text-sm font-semibold w-6 text-center tabular-nums", "{item_qty}" }
                                                                 button { class: QTY_BTN,
-                                                                    onclick: move |_| { let sc = app_state().auth.session_cookie.clone(); let nq = item_qty + 1; spawn(async move { let mut req = reqwest::Client::new().put(&format!("{}/cart/{}", &crate::api_base(), item_id)).json(&serde_json::json!({"quantity":nq})); if let Some(ref s)=sc{req=req.header("Cookie",format!("brewflow_session={}",s));} let _=req.send().await; update_trigger.set(update_trigger()+1); }); },
+                                                                    onclick: move |_| { let sc = app_state().auth.session_cookie.clone(); let nq = item_qty + 1; spawn(async move { let mut req = reqwest::Client::new().put(&format!("{}/cart/{}", &crate::app::api_base(), item_id)).json(&serde_json::json!({"quantity":nq})); if let Some(ref s)=sc{req=req.header("Cookie",format!("brewflow_session={}",s));} let _=req.send().await; update_trigger.set(update_trigger()+1); }); },
                                                                     "+"
                                                                 }
                                                             }
                                                             PriceDisplay { amount: item.line_total, locale: locale.clone() }
                                                             button { class: "text-xs text-red-500 hover:text-red-700 cursor-pointer",
-                                                                onclick: move |_| { let sc = app_state().auth.session_cookie.clone(); spawn(async move { let mut req = reqwest::Client::new().delete(&format!("{}/cart/{}", &crate::api_base(), item_id)); if let Some(ref s)=sc{req=req.header("Cookie",format!("brewflow_session={}",s));} let _=req.send().await; update_trigger.set(update_trigger()+1); }); },
+                                                                onclick: move |_| { let sc = app_state().auth.session_cookie.clone(); spawn(async move { let mut req = reqwest::Client::new().delete(&format!("{}/cart/{}", &crate::app::api_base(), item_id)); if let Some(ref s)=sc{req=req.header("Cookie",format!("brewflow_session={}",s));} let _=req.send().await; update_trigger.set(update_trigger()+1); }); },
                                                                 "{remove_text}"
                                                             }
                                                         }
@@ -128,11 +128,11 @@ pub fn CartPage(locale: String) -> Element {
                                     }
 
                                     div { class: "flex justify-between gap-4",
-                                        Link { to: crate::Route::Menu { locale: locale.clone() },
+                                        Link { to: crate::app::Route::Menu { locale: locale.clone() },
                                             class: "inline-flex items-center justify-center px-5 py-2.5 rounded-lg text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 transition-all no-underline",
                                             if loc == "zh" { "\u{7ee7}\u{7eed}\u{9009}\u{8d2d}" } else { "Continue Shopping" }
                                         }
-                                        Link { to: crate::Route::Checkout { locale: locale.clone() },
+                                        Link { to: crate::app::Route::Checkout { locale: locale.clone() },
                                             class: "inline-flex items-center justify-center px-6 py-3 rounded-lg text-base font-medium bg-primary text-white hover:bg-primary-dark transition-all no-underline",
                                             "{checkout_text}"
                                         }

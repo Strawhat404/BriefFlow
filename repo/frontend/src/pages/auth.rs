@@ -85,7 +85,7 @@ pub fn LoginPage(locale: String) -> Element {
                                     error_msg.set(None);
                                     let body = LoginRequest { username: user, password: pass };
                                     let result = reqwest::Client::new()
-                                        .post(&format!("{}/auth/login", &crate::api_base()))
+                                        .post(&format!("{}/auth/login", &crate::app::api_base()))
                                         .json(&body)
                                         .send()
                                         .await;
@@ -105,7 +105,7 @@ pub fn LoginPage(locale: String) -> Element {
                                                                 preferred_locale: data.user.preferred_locale,
                                                             };
                                                             app_state.write().set_auth(data.session_cookie, user_info);
-                                                            nav.push(crate::Route::Home { locale: locale_inner });
+                                                            nav.push(crate::app::Route::Home { locale: locale_inner });
                                                         } else {
                                                             error_msg.set(Some(api_resp.error.unwrap_or_else(|| "Login failed".to_string())));
                                                         }
@@ -130,7 +130,7 @@ pub fn LoginPage(locale: String) -> Element {
                     }
 
                     div { class: "text-center mt-6",
-                        Link { to: crate::Route::Register { locale: locale_nav.clone() }, class: "text-sm text-primary hover:text-primary-dark underline", "{register_text}" }
+                        Link { to: crate::app::Route::Register { locale: locale_nav.clone() }, class: "text-sm text-primary hover:text-primary-dark underline", "{register_text}" }
                     }
                 }
             }
@@ -197,7 +197,7 @@ pub fn RegisterPage(locale: String) -> Element {
                             p { class: "font-medium mb-1", "Success!" }
                             p { "{msg}" }
                             Link {
-                                to: crate::Route::Login { locale: locale_nav.clone() },
+                                to: crate::app::Route::Login { locale: locale_nav.clone() },
                                 class: "inline-block mt-2 px-4 py-2 rounded-lg text-sm font-medium bg-green-600 text-white hover:bg-green-700 transition-all no-underline",
                                 if loc == "zh" { "\u{53bb}\u{767b}\u{5f55}" } else { "Go to Login" }
                             }
@@ -266,7 +266,7 @@ pub fn RegisterPage(locale: String) -> Element {
                                         email: if em.is_empty() { None } else { Some(em) },
                                     };
                                     let result = reqwest::Client::new()
-                                        .post(&format!("{}/auth/register", &crate::api_base()))
+                                        .post(&format!("{}/auth/register", &crate::app::api_base()))
                                         .json(&body)
                                         .send()
                                         .await;
@@ -296,7 +296,7 @@ pub fn RegisterPage(locale: String) -> Element {
                     }
 
                     div { class: "text-center mt-6",
-                        Link { to: crate::Route::Login { locale: locale_nav.clone() }, class: "text-sm text-primary hover:text-primary-dark underline", "{login_text}" }
+                        Link { to: crate::app::Route::Login { locale: locale_nav.clone() }, class: "text-sm text-primary hover:text-primary-dark underline", "{login_text}" }
                     }
                 }
             }

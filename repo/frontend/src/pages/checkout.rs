@@ -26,7 +26,7 @@ pub fn CheckoutPage(locale: String) -> Element {
     let cart_resource = use_resource(move || {
         let session_cookie = app_state().auth.session_cookie.clone();
         async move {
-            let mut req = reqwest::Client::new().get(&format!("{}/cart", &crate::api_base()));
+            let mut req = reqwest::Client::new().get(&format!("{}/cart", &crate::app::api_base()));
             if let Some(ref sc) = session_cookie { req = req.header("Cookie", format!("brewflow_session={}", sc)); }
             let resp = req.send().await.map_err(|e| e.to_string())?;
             let data: ApiResponse<CartResponse> = resp.json().await.map_err(|e| e.to_string())?;
@@ -37,7 +37,7 @@ pub fn CheckoutPage(locale: String) -> Element {
     let slots_resource = use_resource(move || {
         let session_cookie = app_state().auth.session_cookie.clone();
         async move {
-            let mut req = reqwest::Client::new().get(&format!("{}/store/pickup-slots?date={}", &crate::api_base(), chrono::Utc::now().format("%Y-%m-%d")));
+            let mut req = reqwest::Client::new().get(&format!("{}/store/pickup-slots?date={}", &crate::app::api_base(), chrono::Utc::now().format("%Y-%m-%d")));
             if let Some(ref sc) = session_cookie { req = req.header("Cookie", format!("brewflow_session={}", sc)); }
             let resp = req.send().await.map_err(|e| e.to_string())?;
             let data: ApiResponse<Vec<PickupSlot>> = resp.json().await.map_err(|e| e.to_string())?;
@@ -91,11 +91,11 @@ pub fn CheckoutPage(locale: String) -> Element {
                         }
 
                         div { class: "flex justify-center gap-4 flex-wrap",
-                            Link { to: crate::Route::OrderDetail { locale: locale.clone(), id: result.order_id },
+                            Link { to: crate::app::Route::OrderDetail { locale: locale.clone(), id: result.order_id },
                                 class: "inline-flex items-center justify-center px-5 py-2.5 rounded-lg text-sm font-medium bg-primary text-white hover:bg-primary-dark transition-all no-underline",
                                 if loc == "zh" { "\u{67e5}\u{770b}\u{8ba2}\u{5355}\u{8be6}\u{60c5}" } else { "View Order Detail" }
                             }
-                            Link { to: crate::Route::Home { locale: locale.clone() },
+                            Link { to: crate::app::Route::Home { locale: locale.clone() },
                                 class: "inline-flex items-center justify-center px-5 py-2.5 rounded-lg text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 transition-all no-underline",
                                 if loc == "zh" { "\u{8fd4}\u{56de}\u{9996}\u{9875}" } else { "Back to Home" }
                             }
@@ -191,7 +191,7 @@ pub fn CheckoutPage(locale: String) -> Element {
                                 spawn(async move {
                                     placing.set(true); error_msg.set(None);
                                     let body = CheckoutRequest { pickup_slot_start: slot.start.clone(), pickup_slot_end: slot.end.clone() };
-                                    let mut req = reqwest::Client::new().post(&format!("{}/orders/checkout", &crate::api_base())).json(&body);
+                                    let mut req = reqwest::Client::new().post(&format!("{}/orders/checkout", &crate::app::api_base())).json(&body);
                                     if let Some(ref sc) = session_cookie { req = req.header("Cookie", format!("brewflow_session={}", sc)); }
                                     match req.send().await {
                                         Ok(resp) => {

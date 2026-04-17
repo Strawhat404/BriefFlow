@@ -60,7 +60,7 @@ pub fn Navbar(locale: String) -> Element {
         nav { class: "bg-primary text-white px-6 flex items-center justify-between h-[60px] shadow-md sticky top-0 z-50",
             // Brand
             div {
-                Link { to: crate::Route::Home { locale: locale.clone() },
+                Link { to: crate::app::Route::Home { locale: locale.clone() },
                     class: "text-white no-underline",
                     h1 { class: "text-2xl font-bold tracking-tight", "BrewFlow" }
                 }
@@ -68,22 +68,22 @@ pub fn Navbar(locale: String) -> Element {
             // Nav links — only shown when authenticated
             if is_authenticated {
                 div { class: "hidden md:flex gap-1",
-                    Link { to: crate::Route::Menu { locale: locale.clone() }, class: NAV_LINK, "{nav_menu}" }
-                    Link { to: crate::Route::Cart { locale: locale.clone() }, class: NAV_LINK,
+                    Link { to: crate::app::Route::Menu { locale: locale.clone() }, class: NAV_LINK, "{nav_menu}" }
+                    Link { to: crate::app::Route::Cart { locale: locale.clone() }, class: NAV_LINK,
                         "{nav_cart}"
                         if cart_count > 0 {
                             span { class: "bg-red-500 text-white rounded-full px-2 py-0.5 text-[0.7rem] font-semibold ml-1", "{cart_count}" }
                         }
                     }
-                    Link { to: crate::Route::Orders { locale: locale.clone() }, class: NAV_LINK, "{nav_orders}" }
+                    Link { to: crate::app::Route::Orders { locale: locale.clone() }, class: NAV_LINK, "{nav_orders}" }
                     if is_staff {
-                        Link { to: crate::Route::StaffDashboard { locale: locale.clone() }, class: NAV_LINK, "{nav_staff}" }
+                        Link { to: crate::app::Route::StaffDashboard { locale: locale.clone() }, class: NAV_LINK, "{nav_staff}" }
                     }
                     if is_teacher {
-                        Link { to: crate::Route::Training { locale: locale.clone() }, class: NAV_LINK, "{nav_training}" }
+                        Link { to: crate::app::Route::Training { locale: locale.clone() }, class: NAV_LINK, "{nav_training}" }
                     }
                     if is_admin {
-                        Link { to: crate::Route::Admin { locale: locale.clone() }, class: NAV_LINK, "{nav_admin}" }
+                        Link { to: crate::app::Route::Admin { locale: locale.clone() }, class: NAV_LINK, "{nav_admin}" }
                     }
                 }
             }
@@ -98,7 +98,7 @@ pub fn Navbar(locale: String) -> Element {
                         "Logout"
                     }
                 } else {
-                    Link { to: crate::Route::Login { locale: locale_login.clone() },
+                    Link { to: crate::app::Route::Login { locale: locale_login.clone() },
                         class: "inline-flex items-center justify-center px-3 py-1.5 text-xs rounded-lg font-medium bg-white text-primary hover:bg-gray-100 transition-all no-underline",
                         "Login"
                     }

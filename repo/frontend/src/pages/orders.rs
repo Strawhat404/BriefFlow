@@ -33,7 +33,7 @@ pub fn OrdersPage(locale: String) -> Element {
     let orders_resource = use_resource(move || {
         let session_cookie = app_state().auth.session_cookie.clone();
         async move {
-            let mut req = reqwest::Client::new().get(&format!("{}/orders", &crate::api_base()));
+            let mut req = reqwest::Client::new().get(&format!("{}/orders", &crate::app::api_base()));
             if let Some(ref sc) = session_cookie { req = req.header("Cookie", format!("brewflow_session={}", sc)); }
             let resp = req.send().await.map_err(|e| e.to_string())?;
             let data: ApiResponse<Vec<OrderSummary>> = resp.json().await.map_err(|e| e.to_string())?;
@@ -55,7 +55,7 @@ pub fn OrdersPage(locale: String) -> Element {
                             rsx! {
                                 div { class: "text-center py-16",
                                     p { class: "text-gray-400 text-lg mb-4", if loc == "zh" { "\u{6682}\u{65e0}\u{8ba2}\u{5355}" } else { "No orders yet" } }
-                                    Link { to: crate::Route::Menu { locale: locale.clone() }, class: "inline-flex items-center justify-center px-5 py-2.5 rounded-lg text-sm font-medium bg-primary text-white hover:bg-primary-dark transition-all no-underline",
+                                    Link { to: crate::app::Route::Menu { locale: locale.clone() }, class: "inline-flex items-center justify-center px-5 py-2.5 rounded-lg text-sm font-medium bg-primary text-white hover:bg-primary-dark transition-all no-underline",
                                         if loc == "zh" { "\u{53bb}\u{9009}\u{8d2d}" } else { "Browse Menu" }
                                     }
                                 }
@@ -65,7 +65,7 @@ pub fn OrdersPage(locale: String) -> Element {
                                 div { class: "space-y-4",
                                     for order in orders.iter() {
                                         { let oid = order.id; rsx! {
-                                            Link { to: crate::Route::OrderDetail { locale: locale.clone(), id: oid },
+                                            Link { to: crate::app::Route::OrderDetail { locale: locale.clone(), id: oid },
                                                 class: "block bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-5 no-underline text-gray-800",
                                                 div { class: "flex justify-between items-center mb-3",
                                                     span { class: "font-semibold text-lg", "#{order.order_number}" }
@@ -113,7 +113,7 @@ pub fn OrderDetailPage(locale: String, id: i64) -> Element {
         let _trigger = refresh_trigger();
         let session_cookie = app_state().auth.session_cookie.clone();
         async move {
-            let mut req = reqwest::Client::new().get(&format!("{}/orders/{}", &crate::api_base(), id));
+            let mut req = reqwest::Client::new().get(&format!("{}/orders/{}", &crate::app::api_base(), id));
             if let Some(ref sc) = session_cookie { req = req.header("Cookie", format!("brewflow_session={}", sc)); }
             let resp = req.send().await.map_err(|e| e.to_string())?;
             let data: ApiResponse<OrderDetail> = resp.json().await.map_err(|e| e.to_string())?;
@@ -227,7 +227,7 @@ pub fn OrderDetailPage(locale: String, id: i64) -> Element {
                                                     spawn(async move {
                                                         action_loading.set(true); error_msg.set(None);
                                                         let body = serde_json::json!({"action":"confirm"});
-                                                        let mut req = reqwest::Client::new().post(&format!("{}/orders/{}/confirm", &crate::api_base(), id)).json(&body);
+                                                        let mut req = reqwest::Client::new().post(&format!("{}/orders/{}/confirm", &crate::app::api_base(), id)).json(&body);
                                                         if let Some(ref sc) = session_cookie { req = req.header("Cookie", format!("brewflow_session={}", sc)); }
                                                         match req.send().await {
                                                             Ok(resp) if resp.status().is_success() => { refresh_trigger.set(refresh_trigger()+1); }
@@ -249,7 +249,7 @@ pub fn OrderDetailPage(locale: String, id: i64) -> Element {
                                                     spawn(async move {
                                                         action_loading.set(true); error_msg.set(None);
                                                         let body = serde_json::json!({"action":"cancel"});
-                                                        let mut req = reqwest::Client::new().post(&format!("{}/orders/{}/cancel", &crate::api_base(), id)).json(&body);
+                                                        let mut req = reqwest::Client::new().post(&format!("{}/orders/{}/cancel", &crate::app::api_base(), id)).json(&body);
                                                         if let Some(ref sc) = session_cookie { req = req.header("Cookie", format!("brewflow_session={}", sc)); }
                                                         match req.send().await {
                                                             Ok(resp) if resp.status().is_success() => { refresh_trigger.set(refresh_trigger()+1); }

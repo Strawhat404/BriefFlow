@@ -23,7 +23,7 @@ pub fn HomePage(locale: String) -> Element {
     let featured = use_resource(move || {
         let locale = loc.clone();
         async move {
-            let url = format!("{}/products?featured=true&limit=3", &crate::api_base());
+            let url = format!("{}/products?featured=true&limit=3", &crate::app::api_base());
             let resp = reqwest::Client::new().get(&url).send().await.map_err(|e| e.to_string())?;
             let data: ApiResponse<Vec<ProductListItem>> = resp.json().await.map_err(|e| e.to_string())?;
             data.data.ok_or_else(|| "No data returned".to_string())
@@ -31,7 +31,7 @@ pub fn HomePage(locale: String) -> Element {
     });
 
     let store_hours = use_resource(move || async move {
-        let url = format!("{}/store/hours", &crate::api_base());
+        let url = format!("{}/store/hours", &crate::app::api_base());
         let resp = reqwest::Client::new().get(&url).send().await.map_err(|e| e.to_string())?;
         let data: ApiResponse<Vec<StoreHours>> = resp.json().await.map_err(|e| e.to_string())?;
         data.data.ok_or_else(|| "No hours data".to_string())
@@ -56,12 +56,12 @@ pub fn HomePage(locale: String) -> Element {
                     p { class: "text-lg opacity-90 max-w-xl mx-auto mb-6", "{hero_subtitle}" }
                     div { class: "flex justify-center gap-4 flex-wrap",
                         Link {
-                            to: crate::Route::Menu { locale: locale.clone() },
+                            to: crate::app::Route::Menu { locale: locale.clone() },
                             class: "inline-flex items-center justify-center px-6 py-3 rounded-lg text-base font-medium bg-white text-primary hover:bg-gray-100 transition-all no-underline",
                             "{menu_link_text}"
                         }
                         Link {
-                            to: crate::Route::Training { locale: locale.clone() },
+                            to: crate::app::Route::Training { locale: locale.clone() },
                             class: "inline-flex items-center justify-center px-6 py-3 rounded-lg text-base font-medium bg-white/20 text-white border border-white/30 hover:bg-white/30 transition-all no-underline",
                             "{training_link_text}"
                         }
@@ -97,7 +97,7 @@ pub fn HomePage(locale: String) -> Element {
                                                     div { class: "flex justify-between items-center mt-4",
                                                         PriceDisplay { amount: price, locale: locale.clone() }
                                                         Link {
-                                                            to: crate::Route::ProductDetail { locale: locale.clone(), id: pid },
+                                                            to: crate::app::Route::ProductDetail { locale: locale.clone(), id: pid },
                                                             class: "inline-flex items-center justify-center px-3 py-1.5 text-xs rounded-lg font-medium bg-primary text-white hover:bg-primary-dark transition-all no-underline",
                                                             if loc == "zh" { "\u{67e5}\u{770b}" } else { "View" }
                                                         }
@@ -166,19 +166,19 @@ pub fn HomePage(locale: String) -> Element {
                 section { class: "mb-8",
                     div { class: "grid grid-cols-1 md:grid-cols-3 gap-4",
                         Link {
-                            to: crate::Route::Menu { locale: locale.clone() },
+                            to: crate::app::Route::Menu { locale: locale.clone() },
                             class: "flex flex-col items-center p-6 bg-white rounded-xl shadow hover:shadow-md transition-shadow no-underline text-gray-800",
                             span { class: "text-3xl mb-2", "\u{2615}" }
                             h3 { class: "font-semibold", "{menu_link_text}" }
                         }
                         Link {
-                            to: crate::Route::Training { locale: locale.clone() },
+                            to: crate::app::Route::Training { locale: locale.clone() },
                             class: "flex flex-col items-center p-6 bg-white rounded-xl shadow hover:shadow-md transition-shadow no-underline text-gray-800",
                             span { class: "text-3xl mb-2", "\u{1f4da}" }
                             h3 { class: "font-semibold", "{training_link_text}" }
                         }
                         Link {
-                            to: crate::Route::Orders { locale: locale.clone() },
+                            to: crate::app::Route::Orders { locale: locale.clone() },
                             class: "flex flex-col items-center p-6 bg-white rounded-xl shadow hover:shadow-md transition-shadow no-underline text-gray-800",
                             span { class: "text-3xl mb-2", "\u{1f4cb}" }
                             h3 { class: "font-semibold", "{t.t(&loc, \"nav.orders\")}" }

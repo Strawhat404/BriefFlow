@@ -18,7 +18,7 @@ pub fn MenuPage(locale: String) -> Element {
 
     let products_resource = use_resource(move || {
         async move {
-            let url = format!("{}/products", &crate::api_base());
+            let url = format!("{}/products", &crate::app::api_base());
             let resp = reqwest::Client::new().get(&url).send().await.map_err(|e| e.to_string())?;
             let data: ApiResponse<Vec<ProductListItem>> = resp.json().await.map_err(|e| e.to_string())?;
             data.data.ok_or_else(|| "No data returned".to_string())
@@ -93,7 +93,7 @@ pub fn MenuPage(locale: String) -> Element {
                                         let prep = product.prep_time_minutes;
                                         rsx! {
                                             Link {
-                                                to: crate::Route::ProductDetail { locale: locale.clone(), id: pid },
+                                                to: crate::app::Route::ProductDetail { locale: locale.clone(), id: pid },
                                                 class: "bg-white rounded-xl shadow hover:shadow-md transition-shadow overflow-hidden no-underline text-gray-800 block",
                                                 div { class: "h-44 bg-gray-100 flex items-center justify-center text-4xl text-gray-300",
                                                     if let Some(ref img) = product.image_url {

@@ -37,7 +37,7 @@ pub fn StaffDashboardPage(locale: String) -> Element {
     let counts_resource = use_resource(move || {
         let session_cookie = app_state().auth.session_cookie.clone();
         async move {
-            let mut req = reqwest::Client::new().get(&format!("{}/staff/dashboard/counts", &crate::api_base()));
+            let mut req = reqwest::Client::new().get(&format!("{}/staff/dashboard/counts", &crate::app::api_base()));
             if let Some(ref sc) = session_cookie { req = req.header("Cookie", format!("brewflow_session={}", sc)); }
             let resp = req.send().await.map_err(|e| e.to_string())?;
             let data: ApiResponse<DashboardCounts> = resp.json().await.map_err(|e| e.to_string())?;
@@ -49,7 +49,7 @@ pub fn StaffDashboardPage(locale: String) -> Element {
         let session_cookie = app_state().auth.session_cookie.clone();
         let filter = status_filter();
         async move {
-            let url = if filter.is_empty() { format!("{}/staff/orders", &crate::api_base()) } else { format!("{}/staff/orders?status={}", &crate::api_base(), filter) };
+            let url = if filter.is_empty() { format!("{}/staff/orders", &crate::app::api_base()) } else { format!("{}/staff/orders?status={}", &crate::app::api_base(), filter) };
             let mut req = reqwest::Client::new().get(&url);
             if let Some(ref sc) = session_cookie { req = req.header("Cookie", format!("brewflow_session={}", sc)); }
             let resp = req.send().await.map_err(|e| e.to_string())?;
@@ -71,7 +71,7 @@ pub fn StaffDashboardPage(locale: String) -> Element {
             main { class: "flex-1 max-w-7xl mx-auto px-4 py-8 w-full",
                 div { class: "flex justify-between items-center mb-6",
                     h2 { class: "text-2xl font-bold text-gray-800", "{page_title}" }
-                    Link { to: crate::Route::StaffScan { locale: locale.clone() }, class: BTN_PRIMARY, "{scan_label}" }
+                    Link { to: crate::app::Route::StaffScan { locale: locale.clone() }, class: BTN_PRIMARY, "{scan_label}" }
                 }
 
                 // Dashboard cards
@@ -117,7 +117,7 @@ pub fn StaffDashboardPage(locale: String) -> Element {
                             if orders.is_empty() { p { class: "text-center py-8 text-gray-400", if loc == "zh" { "\u{6ca1}\u{6709}\u{8ba2}\u{5355}" } else { "No orders" } } }
                             for order in orders.iter() {
                                 { let oid = order.id; rsx! {
-                                    Link { to: crate::Route::StaffOrderDetail { locale: locale.clone(), id: oid },
+                                    Link { to: crate::app::Route::StaffOrderDetail { locale: locale.clone(), id: oid },
                                         class: "block bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-4 no-underline text-gray-800",
                                         div { class: "flex justify-between items-center mb-2",
                                             span { class: "font-semibold", "#{order.order_number}" }
@@ -156,7 +156,7 @@ pub fn StaffOrderDetailPage(locale: String, id: i64) -> Element {
         let _trigger = refresh_trigger();
         let session_cookie = app_state().auth.session_cookie.clone();
         async move {
-            let mut req = reqwest::Client::new().get(&format!("{}/staff/orders/{}", &crate::api_base(), id));
+            let mut req = reqwest::Client::new().get(&format!("{}/staff/orders/{}", &crate::app::api_base(), id));
             if let Some(ref sc) = session_cookie { req = req.header("Cookie", format!("brewflow_session={}", sc)); }
             let resp = req.send().await.map_err(|e| e.to_string())?;
             let data: ApiResponse<OrderDetail> = resp.json().await.map_err(|e| e.to_string())?;
@@ -229,7 +229,7 @@ pub fn StaffOrderDetailPage(locale: String, id: i64) -> Element {
                                                             spawn(async move {
                                                                 action_loading.set(true); error_msg.set(None); success_msg.set(None);
                                                                 let body = UpdateOrderStatusRequest { new_status: ns.clone(), notes: if notes.is_empty() { None } else { Some(notes) } };
-                                                                let mut req = reqwest::Client::new().put(&format!("{}/staff/orders/{}/status", &crate::api_base(), id)).json(&body);
+                                                                let mut req = reqwest::Client::new().put(&format!("{}/staff/orders/{}/status", &crate::app::api_base(), id)).json(&body);
                                                                 if let Some(ref sc) = session_cookie { req = req.header("Cookie", format!("brewflow_session={}", sc)); }
                                                                 match req.send().await {
                                                                     Ok(resp) if resp.status().is_success() => { success_msg.set(Some(format!("Status updated to {}", ns))); status_notes.set(String::new()); refresh_trigger.set(refresh_trigger()+1); }
@@ -308,7 +308,7 @@ pub fn StaffScanPage(locale: String) -> Element {
                             scanning.set(true); error_msg.set(None); scan_result.set(None);
                             let parsed_order_id = oid_str.trim().parse::<i64>().ok();
                             let body = ScanVoucherRequest { voucher_code: code, order_id: parsed_order_id };
-                            let mut req = reqwest::Client::new().post(&format!("{}/staff/scan", &crate::api_base())).json(&body);
+                            let mut req = reqwest::Client::new().post(&format!("{}/staff/scan", &crate::app::api_base())).json(&body);
                             if let Some(ref sc) = session_cookie { req = req.header("Cookie", format!("brewflow_session={}", sc)); }
                             match req.send().await {
                                 Ok(resp) => {
@@ -381,7 +381,7 @@ pub fn StaffScanPage(locale: String) -> Element {
                                 if let Some(ref slot) = order.pickup_slot {
                                     p { class: "text-sm text-gray-500 mb-3", if loc == "zh" { "\u{53d6}\u{9910}: " } else { "Pickup: " } "{slot}" }
                                 }
-                                Link { to: crate::Route::StaffOrderDetail { locale: locale.clone(), id: order.id }, class: BTN_PRIMARY,
+                                Link { to: crate::app::Route::StaffOrderDetail { locale: locale.clone(), id: order.id }, class: BTN_PRIMARY,
                                     if loc == "zh" { "\u{7ba1}\u{7406}\u{8ba2}\u{5355}" } else { "Manage Order" }
                                 }
                             }

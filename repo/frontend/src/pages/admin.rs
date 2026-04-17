@@ -61,21 +61,21 @@ pub fn AdminPage(locale: String) -> Element {
 
                     div { class: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4",
                         Link {
-                            to: crate::Route::QuestionBank { locale: locale.clone() },
+                            to: crate::app::Route::QuestionBank { locale: locale.clone() },
                             class: "flex flex-col items-center p-6 bg-white rounded-xl shadow hover:shadow-md transition-shadow no-underline text-gray-800 text-center",
                             div { class: "text-3xl mb-2", "\u{1f4da}" }
                             h3 { "{t.t(&loc, \"page.question_bank\")}" }
                             p { if loc == "zh" { "\u{7ba1}\u{7406}\u{9898}\u{5e93}" } else { "Manage question bank" } }
                         }
                         Link {
-                            to: crate::Route::ImportQuestions { locale: locale.clone() },
+                            to: crate::app::Route::ImportQuestions { locale: locale.clone() },
                             class: "flex flex-col items-center p-6 bg-white rounded-xl shadow hover:shadow-md transition-shadow no-underline text-gray-800 text-center",
                             div { class: "text-3xl mb-2", "\u{1f4e5}" }
                             h3 { "{t.t(&loc, \"btn.import\")}" }
                             p { if loc == "zh" { "\u{4ece}CSV\u{5bfc}\u{5165}\u{9898}\u{76ee}" } else { "Import questions from CSV" } }
                         }
                         Link {
-                            to: crate::Route::GenerateExam { locale: locale.clone() },
+                            to: crate::app::Route::GenerateExam { locale: locale.clone() },
                             class: "flex flex-col items-center p-6 bg-white rounded-xl shadow hover:shadow-md transition-shadow no-underline text-gray-800 text-center",
                             div { class: "text-3xl mb-2", "\u{2699}" }
                             h3 { "{t.t(&loc, \"btn.generate\")}" }
@@ -115,7 +115,7 @@ pub fn QuestionBankPage(locale: String) -> Element {
         let session_cookie = app_state().auth.session_cookie.clone();
         async move {
             let mut req = reqwest::Client::new()
-                .get(&format!("{}/exam/subjects", &crate::api_base()));
+                .get(&format!("{}/exam/subjects", &crate::app::api_base()));
             if let Some(ref sc) = session_cookie {
                 req = req.header("Cookie", format!("brewflow_session={}", sc));
             }
@@ -135,7 +135,7 @@ pub fn QuestionBankPage(locale: String) -> Element {
         async move {
             let mut url = format!(
                 "{}/exam/questions?page={}&per_page={}",
-                &crate::api_base(), page, per_page
+                &crate::app::api_base(), page, per_page
             );
             if !search.is_empty() {
                 url.push_str(&format!("&q={}", search));
@@ -339,7 +339,7 @@ pub fn ImportQuestionsPage(locale: String) -> Element {
         let session_cookie = app_state().auth.session_cookie.clone();
         async move {
             let mut req = reqwest::Client::new()
-                .get(&format!("{}/exam/subjects", &crate::api_base()));
+                .get(&format!("{}/exam/subjects", &crate::app::api_base()));
             if let Some(ref sc) = session_cookie {
                 req = req.header("Cookie", format!("brewflow_session={}", sc));
             }
@@ -358,7 +358,7 @@ pub fn ImportQuestionsPage(locale: String) -> Element {
                 return Ok(Vec::<ChapterOption>::new());
             };
             let mut req = reqwest::Client::new()
-                .get(&format!("{}/exam/subjects/{}/chapters", &crate::api_base(), sid));
+                .get(&format!("{}/exam/subjects/{}/chapters", &crate::app::api_base(), sid));
             if let Some(ref sc) = session_cookie {
                 req = req.header("Cookie", format!("brewflow_session={}", sc));
             }
@@ -459,7 +459,7 @@ pub fn ImportQuestionsPage(locale: String) -> Element {
                                     };
 
                                     let mut req = reqwest::Client::new()
-                                        .post(&format!("{}/exam/questions/import", &crate::api_base()))
+                                        .post(&format!("{}/exam/questions/import", &crate::app::api_base()))
                                         .json(&body);
                                     if let Some(ref sc) = session_cookie {
                                         req = req.header("Cookie", format!("brewflow_session={}", sc));
@@ -618,7 +618,7 @@ pub fn GenerateExamPage(locale: String) -> Element {
         let session_cookie = app_state().auth.session_cookie.clone();
         async move {
             let mut req = reqwest::Client::new()
-                .get(&format!("{}/exam/subjects", &crate::api_base()));
+                .get(&format!("{}/exam/subjects", &crate::app::api_base()));
             if let Some(ref sc) = session_cookie {
                 req = req.header("Cookie", format!("brewflow_session={}", sc));
             }
@@ -637,7 +637,7 @@ pub fn GenerateExamPage(locale: String) -> Element {
                 return Ok(Vec::<ChapterOption>::new());
             };
             let mut req = reqwest::Client::new()
-                .get(&format!("{}/exam/subjects/{}/chapters", &crate::api_base(), sid));
+                .get(&format!("{}/exam/subjects/{}/chapters", &crate::app::api_base(), sid));
             if let Some(ref sc) = session_cookie {
                 req = req.header("Cookie", format!("brewflow_session={}", sc));
             }
@@ -739,7 +739,7 @@ pub fn GenerateExamPage(locale: String) -> Element {
                                     };
 
                                     let mut req = reqwest::Client::new()
-                                        .post(&format!("{}/exam/generate", &crate::api_base()))
+                                        .post(&format!("{}/exam/generate", &crate::app::api_base()))
                                         .json(&body);
                                     if let Some(ref sc) = session_cookie {
                                         req = req.header("Cookie", format!("brewflow_session={}", sc));

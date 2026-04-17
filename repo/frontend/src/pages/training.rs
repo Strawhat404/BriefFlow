@@ -76,35 +76,35 @@ pub fn TrainingPage(locale: String) -> Element {
 
                     div { class: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4",
                         Link {
-                            to: crate::Route::MockExams { locale: locale.clone() },
+                            to: crate::app::Route::MockExams { locale: locale.clone() },
                             class: "flex flex-col items-center p-6 bg-white rounded-xl shadow hover:shadow-md transition-shadow no-underline text-gray-800 text-center",
                             div { class: "text-3xl mb-2", "\u{1f4dd}" }
                             h3 { "{exams_title}" }
                             p { if loc == "zh" { "\u{7ec3}\u{4e60}\u{6a21}\u{62df}\u{8003}\u{8bd5}" } else { "Practice with mock exams" } }
                         }
                         Link {
-                            to: crate::Route::Analytics { locale: locale.clone() },
+                            to: crate::app::Route::Analytics { locale: locale.clone() },
                             class: "flex flex-col items-center p-6 bg-white rounded-xl shadow hover:shadow-md transition-shadow no-underline text-gray-800 text-center",
                             div { class: "text-3xl mb-2", "\u{1f4ca}" }
                             h3 { "{analytics_title}" }
                             p { if loc == "zh" { "\u{67e5}\u{770b}\u{6210}\u{7ee9}\u{5206}\u{6790}" } else { "View score analytics" } }
                         }
                         Link {
-                            to: crate::Route::Favorites { locale: locale.clone() },
+                            to: crate::app::Route::Favorites { locale: locale.clone() },
                             class: "flex flex-col items-center p-6 bg-white rounded-xl shadow hover:shadow-md transition-shadow no-underline text-gray-800 text-center",
                             div { class: "text-3xl mb-2", "\u{2b50}" }
                             h3 { "{favorites_title}" }
                             p { if loc == "zh" { "\u{6536}\u{85cf}\u{7684}\u{9898}\u{76ee}" } else { "Your saved questions" } }
                         }
                         Link {
-                            to: crate::Route::WrongNotebook { locale: locale.clone() },
+                            to: crate::app::Route::WrongNotebook { locale: locale.clone() },
                             class: "flex flex-col items-center p-6 bg-white rounded-xl shadow hover:shadow-md transition-shadow no-underline text-gray-800 text-center",
                             div { class: "text-3xl mb-2", "\u{1f4d3}" }
                             h3 { "{wrong_title}" }
                             p { if loc == "zh" { "\u{590d}\u{4e60}\u{9519}\u{9898}" } else { "Review wrong answers" } }
                         }
                         Link {
-                            to: crate::Route::ReviewSession { locale: locale.clone() },
+                            to: crate::app::Route::ReviewSession { locale: locale.clone() },
                             class: "flex flex-col items-center p-6 bg-white rounded-xl shadow hover:shadow-md transition-shadow no-underline text-gray-800 text-center",
                             div { class: "text-3xl mb-2", "\u{1f504}" }
                             h3 { "{review_title}" }
@@ -132,7 +132,7 @@ pub fn MockExamsPage(locale: String) -> Element {
         let session_cookie = app_state().auth.session_cookie.clone();
         async move {
             let mut req = reqwest::Client::new()
-                .get(&format!("{}/exam/versions", &crate::api_base()));
+                .get(&format!("{}/exam/versions", &crate::app::api_base()));
             if let Some(ref sc) = session_cookie {
                 req = req.header("Cookie", format!("brewflow_session={}", sc));
             }
@@ -200,7 +200,7 @@ pub fn MockExamsPage(locale: String) -> Element {
                                                         }
                                                         div { class: "px-5 pb-5",
                                                             Link {
-                                                                to: crate::Route::TakeExam { locale: locale.clone(), id: eid },
+                                                                to: crate::app::Route::TakeExam { locale: locale.clone(), id: eid },
                                                                 class: "inline-flex items-center justify-center px-5 py-2.5 rounded-lg text-sm font-medium bg-primary text-white hover:bg-primary-dark transition-all disabled:opacity-50 disabled:cursor-not-allowed no-underline",
                                                                 "{start_text}"
                                                             }
@@ -252,7 +252,7 @@ pub fn TakeExamPage(locale: String, id: i64) -> Element {
         let session_cookie = app_state().auth.session_cookie.clone();
         async move {
             let mut req = reqwest::Client::new()
-                .post(&format!("{}/training/start/{}", &crate::api_base(), id));
+                .post(&format!("{}/training/start/{}", &crate::app::api_base(), id));
             if let Some(ref sc) = session_cookie {
                 req = req.header("Cookie", format!("brewflow_session={}", sc));
             }
@@ -354,12 +354,12 @@ pub fn TakeExamPage(locale: String, id: i64) -> Element {
 
                         div { class: "flex gap-3 mt-6",
                             Link {
-                                to: crate::Route::MockExams { locale: locale.clone() },
+                                to: crate::app::Route::MockExams { locale: locale.clone() },
                                 class: "inline-flex items-center justify-center px-5 py-2.5 rounded-lg text-sm font-medium bg-primary text-white hover:bg-primary-dark transition-all disabled:opacity-50 disabled:cursor-not-allowed no-underline",
                                 if loc == "zh" { "\u{8fd4}\u{56de}\u{8003}\u{8bd5}\u{5217}\u{8868}" } else { "Back to Exams" }
                             }
                             Link {
-                                to: crate::Route::Analytics { locale: locale.clone() },
+                                to: crate::app::Route::Analytics { locale: locale.clone() },
                                 class: "inline-flex items-center justify-center px-5 py-2.5 rounded-lg text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 transition-all no-underline",
                                 if loc == "zh" { "\u{67e5}\u{770b}\u{5206}\u{6790}" } else { "View Analytics" }
                             }
@@ -383,7 +383,7 @@ pub fn TakeExamPage(locale: String, id: i64) -> Element {
                     div { class: "mb-8",
                         div { class: "bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm mb-4", "{err}" }
                         Link {
-                            to: crate::Route::MockExams { locale: locale.clone() },
+                            to: crate::app::Route::MockExams { locale: locale.clone() },
                             class: "inline-flex items-center justify-center px-5 py-2.5 rounded-lg text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 transition-all no-underline",
                             if loc == "zh" { "\u{8fd4}\u{56de}" } else { "Back" }
                         }
@@ -512,7 +512,7 @@ pub fn TakeExamPage(locale: String, id: i64) -> Element {
                                                                     selected_option_ids: opts.clone(),
                                                                 };
                                                                 let mut req = reqwest::Client::new()
-                                                                    .post(&format!("{}/training/answer", &crate::api_base()))
+                                                                    .post(&format!("{}/training/answer", &crate::app::api_base()))
                                                                     .json(&body);
                                                                 if let Some(ref sc) = session_cookie {
                                                                     req = req.header("Cookie", format!("brewflow_session={}", sc));
@@ -522,7 +522,7 @@ pub fn TakeExamPage(locale: String, id: i64) -> Element {
 
                                                             // Finish exam
                                                             let mut req = reqwest::Client::new()
-                                                                .post(&format!("{}/training/finish/{}", &crate::api_base(), attempt_id));
+                                                                .post(&format!("{}/training/finish/{}", &crate::app::api_base(), attempt_id));
                                                             if let Some(ref sc) = session_cookie {
                                                                 req = req.header("Cookie", format!("brewflow_session={}", sc));
                                                             }
@@ -578,7 +578,7 @@ pub fn AnalyticsPage(locale: String) -> Element {
         let session_cookie = app_state().auth.session_cookie.clone();
         async move {
             let mut req = reqwest::Client::new()
-                .get(&format!("{}/training/analytics", &crate::api_base()));
+                .get(&format!("{}/training/analytics", &crate::app::api_base()));
             if let Some(ref sc) = session_cookie {
                 req = req.header("Cookie", format!("brewflow_session={}", sc));
             }
@@ -739,7 +739,7 @@ pub fn FavoritesPage(locale: String) -> Element {
         let session_cookie = app_state().auth.session_cookie.clone();
         async move {
             let mut req = reqwest::Client::new()
-                .get(&format!("{}/training/favorites", &crate::api_base()));
+                .get(&format!("{}/training/favorites", &crate::app::api_base()));
             if let Some(ref sc) = session_cookie {
                 req = req.header("Cookie", format!("brewflow_session={}", sc));
             }
@@ -790,7 +790,7 @@ pub fn FavoritesPage(locale: String) -> Element {
                                                                 let session_cookie = app_state().auth.session_cookie.clone();
                                                                 spawn(async move {
                                                                     let method = if is_fav { "DELETE" } else { "POST" };
-                                                                    let url = format!("{}/training/favorites/{}", &crate::api_base(), q_id);
+                                                                    let url = format!("{}/training/favorites/{}", &crate::app::api_base(), q_id);
                                                                     let client = reqwest::Client::new();
                                                                     let mut req = if is_fav {
                                                                         client.delete(&url)
@@ -842,7 +842,7 @@ pub fn WrongNotebookPage(locale: String) -> Element {
         let session_cookie = app_state().auth.session_cookie.clone();
         async move {
             let mut req = reqwest::Client::new()
-                .get(&format!("{}/training/wrong-notebook", &crate::api_base()));
+                .get(&format!("{}/training/wrong-notebook", &crate::app::api_base()));
             if let Some(ref sc) = session_cookie {
                 req = req.header("Cookie", format!("brewflow_session={}", sc));
             }
@@ -940,7 +940,7 @@ pub fn ReviewSessionPage(locale: String) -> Element {
         let session_cookie = app_state().auth.session_cookie.clone();
         async move {
             let mut req = reqwest::Client::new()
-                .get(&format!("{}/training/review-session", &crate::api_base()));
+                .get(&format!("{}/training/review-session", &crate::app::api_base()));
             if let Some(ref sc) = session_cookie {
                 req = req.header("Cookie", format!("brewflow_session={}", sc));
             }
@@ -974,7 +974,7 @@ pub fn ReviewSessionPage(locale: String) -> Element {
                                             if loc == "zh" { "\u{6682}\u{65e0}\u{9700}\u{8981}\u{590d}\u{4e60}\u{7684}\u{9898}\u{76ee}" } else { "No questions due for review" }
                                         }
                                         Link {
-                                            to: crate::Route::Training { locale: locale.clone() },
+                                            to: crate::app::Route::Training { locale: locale.clone() },
                                             class: "inline-flex items-center justify-center px-5 py-2.5 rounded-lg text-sm font-medium bg-primary text-white hover:bg-primary-dark transition-all disabled:opacity-50 disabled:cursor-not-allowed no-underline",
                                             if loc == "zh" { "\u{8fd4}\u{56de}" } else { "Back" }
                                         }
@@ -994,7 +994,7 @@ pub fn ReviewSessionPage(locale: String) -> Element {
                                             }
                                         }
                                         Link {
-                                            to: crate::Route::Training { locale: locale.clone() },
+                                            to: crate::app::Route::Training { locale: locale.clone() },
                                             class: "inline-flex items-center justify-center px-5 py-2.5 rounded-lg text-sm font-medium bg-primary text-white hover:bg-primary-dark transition-all disabled:opacity-50 disabled:cursor-not-allowed no-underline",
                                             if loc == "zh" { "\u{8fd4}\u{56de}\u{57f9}\u{8bad}" } else { "Back to Training" }
                                         }
@@ -1082,7 +1082,7 @@ pub fn ReviewSessionPage(locale: String) -> Element {
                                                                     selected_option_ids: opts,
                                                                 };
                                                                 let mut req = reqwest::Client::new()
-                                                                    .post(&format!("{}/training/answer", &crate::api_base()))
+                                                                    .post(&format!("{}/training/answer", &crate::app::api_base()))
                                                                     .json(&body);
                                                                 if let Some(ref sc) = session_cookie {
                                                                     req = req.header("Cookie", format!("brewflow_session={}", sc));

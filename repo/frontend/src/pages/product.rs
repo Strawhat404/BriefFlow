@@ -29,14 +29,14 @@ pub fn ProductDetailPage(locale: String, id: i64) -> Element {
     let mut adding = use_signal(|| false);
 
     let product_resource = use_resource(move || async move {
-        let url = format!("{}/products/{}", &crate::api_base(), id);
+        let url = format!("{}/products/{}", &crate::app::api_base(), id);
         let resp = reqwest::Client::new().get(&url).send().await.map_err(|e| e.to_string())?;
         let data: ApiResponse<ProductDetail> = resp.json().await.map_err(|e| e.to_string())?;
         data.data.ok_or_else(|| "Product not found".to_string())
     });
 
     let tax_resource = use_resource(move || async move {
-        let url = format!("{}/store/tax", &crate::api_base());
+        let url = format!("{}/store/tax", &crate::app::api_base());
         let resp = reqwest::Client::new().get(&url).send().await.ok()?;
         let data: ApiResponse<SalesTaxConfig> = resp.json().await.ok()?;
         data.data
@@ -149,7 +149,7 @@ pub fn ProductDetailPage(locale: String, id: i64) -> Element {
                                                     spawn(async move {
                                                         adding.set(true); add_error.set(None); add_success.set(false);
                                                         let body = AddToCartRequest { sku_id: None, spu_id: id, selected_options: opts, quantity: qty_val };
-                                                        let mut req = reqwest::Client::new().post(&format!("{}/cart/add", &crate::api_base())).json(&body);
+                                                        let mut req = reqwest::Client::new().post(&format!("{}/cart/add", &crate::app::api_base())).json(&body);
                                                         if let Some(ref sc) = session_cookie { req = req.header("Cookie", format!("brewflow_session={}", sc)); }
                                                         match req.send().await {
                                                             Ok(resp) => {

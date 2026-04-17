@@ -29,7 +29,7 @@ pub fn LocaleSwitcher(current_locale: String) -> Element {
                 onclick: move |_| {
                     let mut s = state.write();
                     s.locale = "en".to_string();
-                    nav.replace(crate::Route::Home { locale: "en".to_string() });
+                    nav.replace(crate::app::Route::Home { locale: "en".to_string() });
                 },
                 "EN"
             }
@@ -39,7 +39,7 @@ pub fn LocaleSwitcher(current_locale: String) -> Element {
                 onclick: move |_| {
                     let mut s = state.write();
                     s.locale = "zh".to_string();
-                    nav.replace(crate::Route::Home { locale: "zh".to_string() });
+                    nav.replace(crate::app::Route::Home { locale: "zh".to_string() });
                 },
                 "\u{4e2d}\u{6587}"
             }
