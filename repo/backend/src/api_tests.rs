@@ -736,10 +736,7 @@ mod tests {
             .dispatch();
         // Rocket returns 422 or 400 on malformed input for JSON guards.
         assert!(
-            matches!(
-                resp.status(),
-                Status::UnprocessableEntity | Status::BadRequest
-            ),
+            [Status::UnprocessableEntity, Status::BadRequest].contains(&resp.status()),
             "expected 400/422 for missing required field, got {}",
             resp.status()
         );
@@ -967,10 +964,7 @@ mod tests {
         // because the query param is required.
         let resp = client.get("/api/store/pickup-slots").dispatch();
         assert!(
-            matches!(
-                resp.status(),
-                Status::NotFound | Status::BadRequest | Status::UnprocessableEntity
-            ),
+            [Status::NotFound, Status::BadRequest, Status::UnprocessableEntity].contains(&resp.status()),
             "expected 4xx, got {}",
             resp.status()
         );
@@ -1503,8 +1497,9 @@ mod tests {
         assert_eq!(list.status(), Status::Ok);
 
         for locale in &["en", "zh"] {
+            let url = format!("/api/i18n/translations/{}", locale);
             let resp = client
-                .get(&format!("/api/i18n/translations/{}", locale))
+                .get(url.as_str())
                 .dispatch();
             assert_eq!(resp.status(), Status::Ok);
             let body: serde_json::Value =

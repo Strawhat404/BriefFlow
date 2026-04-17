@@ -169,11 +169,9 @@ mod tests {
         let f = LogMaskFairing;
         let info = f.info();
         assert_eq!(info.name, "Log Mask Fairing");
-        // Kind is a bitflag-style set in Rocket; verify Response is present
-        // via the bitwise AND rather than assuming a specific helper name.
-        let response_only = rocket::fairing::Kind::Response;
+        // Kind is a bitflag-style set in Rocket; verify Response is present.
         assert!(
-            (info.kind & response_only) == response_only,
+            info.kind.contains(rocket::fairing::Kind::Response),
             "fairing must declare Response kind"
         );
     }
