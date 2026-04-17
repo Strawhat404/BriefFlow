@@ -2396,10 +2396,10 @@ mod tests {
         let (_rt, rocket) = require_db!();
         let client = Client::tracked(rocket).expect("valid rocket");
         let cookie = login(&client, "customer", "CustomerPass123!");
-        // No questions are seeded in 006_seed_data.sql — question_id=1 does
-        // not exist. The handler does not pre-validate, so the DB FK
+        // question_id=999999999 will never exist in the test DB.
+        // The handler does not pre-validate, so the DB FK
         // constraint fails → 500.
-        let resp = client.post("/api/training/favorites/1")
+        let resp = client.post("/api/training/favorites/999999999")
             .cookie(rocket::http::Cookie::new("brewflow_session", cookie))
             .dispatch();
         assert_eq!(resp.status(), Status::InternalServerError);

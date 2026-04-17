@@ -4,7 +4,7 @@ use shared::models::{StoreHours, Reservation, SalesTaxConfig, Voucher};
 
 pub async fn get_store_hours(pool: &MySqlPool) -> Vec<StoreHours> {
     let rows = sqlx::query(
-        "SELECT id, day_of_week, open_time, close_time, is_closed
+        "SELECT id, day_of_week, CAST(open_time AS CHAR) AS open_time, CAST(close_time AS CHAR) AS close_time, is_closed
          FROM store_hours ORDER BY day_of_week"
     )
     .fetch_all(pool)
