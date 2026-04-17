@@ -14,7 +14,7 @@ pub async fn get_store_hours(pool: &MySqlPool) -> Vec<StoreHours> {
     rows.into_iter()
         .map(|r| StoreHours {
             id: r.get("id"),
-            day_of_week: r.get::<u8, _>("day_of_week"),
+            day_of_week: r.get::<i8, _>("day_of_week") as u8,
             open_time: r.get("open_time"),
             close_time: r.get("close_time"),
             is_closed: r.get("is_closed"),

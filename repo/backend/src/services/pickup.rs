@@ -49,6 +49,12 @@ pub fn generate_pickup_slots(
     let mut slot_start_time = open;
 
     while slot_start_time + slot_duration <= close {
+        // Guard against NaiveTime wrapping past midnight (e.g., 23:45 + 15min = 00:00).
+        // If the next slot start would be earlier than the current one, we've wrapped — stop.
+        let next_slot_start = slot_start_time + slot_duration;
+        if next_slot_start < slot_start_time {
+            break;
+        }
         let slot_start = NaiveDateTime::new(date, slot_start_time);
         let slot_end = slot_start + slot_duration;
 

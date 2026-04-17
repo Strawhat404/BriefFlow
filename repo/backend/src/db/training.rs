@@ -130,7 +130,8 @@ pub async fn add_favorite(
     question_id: i64,
 ) -> Result<(), sqlx::Error> {
     sqlx::query(
-        "INSERT IGNORE INTO favorites (user_id, question_id) VALUES (?, ?)"
+        "INSERT INTO favorites (user_id, question_id) VALUES (?, ?)
+         ON DUPLICATE KEY UPDATE user_id = user_id"
     )
     .bind(user_id)
     .bind(question_id)

@@ -56,7 +56,19 @@ INSERT INTO `user_roles` (`user_id`, `role_id`)
 ON DUPLICATE KEY UPDATE `user_id` = `user_id`;
 
 -- -----------------------------------------------------------
--- 2. Fixture: order with expired reservation (for hold-expiry test)
+-- 2. Fixture: SKU data for e2e cart test
+--    SPU 1 (Classic Latte): Size=Small(1), Milk=Whole(4), Sweetness=None(8)
+-- -----------------------------------------------------------
+INSERT INTO `sku` (`id`, `spu_id`, `sku_code`, `price`, `stock_quantity`, `is_active`)
+VALUES (1, 1, 'LATTE-SM-WHOLE-NONE', 4.50, 999, TRUE)
+ON DUPLICATE KEY UPDATE `sku_code` = VALUES(`sku_code`);
+
+INSERT INTO `sku_option_values` (`sku_id`, `option_value_id`)
+VALUES (1, 1), (1, 4), (1, 8)
+ON DUPLICATE KEY UPDATE `sku_id` = `sku_id`;
+
+-- -----------------------------------------------------------
+-- 3. Fixture: order with expired reservation (for hold-expiry test)
 -- -----------------------------------------------------------
 
 -- Reservation that expired in the past, still in 'Held' status
@@ -74,7 +86,7 @@ VALUES (9000, 2, 9000, 'TEST-EXPIRED-HOLD-001', 4.50, 0.39, 4.89, 'Pending')
 ON DUPLICATE KEY UPDATE `status` = 'Pending', `reservation_id` = 9000;
 
 -- -----------------------------------------------------------
--- 3. Fixture: cancelled order with voucher (for voucher-scan test)
+-- 4. Fixture: cancelled order with voucher (for voucher-scan test)
 -- -----------------------------------------------------------
 
 -- Reservation for the cancelled order

@@ -158,9 +158,9 @@ pub async fn import_questions(
 
     for q in &questions {
         let qtype = if q.correct_answer.len() > 1 {
-            "multiple_choice"
+            "MultipleChoice"
         } else {
-            "single_choice"
+            "SingleChoice"
         };
 
         let q_id = crate::db::exam::create_question(
